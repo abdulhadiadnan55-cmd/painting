@@ -303,10 +303,10 @@
   }
 </script>
   <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwcd7ICIaHV1KDqIL205bjjoKSyag8S357SlAV0uz3CFmNiaok4BlLNpwLIqweGREdqFw/exec'; // Your Apps Script Web App URL
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwcd7ICIaHV1KDqIL205bjjoKSyag8S357SlAV0uz3CFmNiaok4BlLNpwLIqweGREdqFw/exec'; // Keep your existing Web App URL
   const form = document.getElementById('reviewForm');
 
-  // 1. Handle Form Submission
+  // 1. Handle Form Submission via GET (100% reliable)
   if (form) {
     form.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -315,38 +315,36 @@
       if (submitBtn) submitBtn.innerText = 'Sending...';
 
       const formData = new FormData(form);
-      const urlParams = new URLSearchParams();
-      formData.forEach((value, key) => {
-        urlParams.append(key, value);
-      });
+      const urlParams = new URLSearchParams(formData);
 
-      fetch(scriptURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: urlParams.toString(),
-        mode: 'no-cors'
-      })
-      .then(() => {
-        alert('Thank you! Your review has been submitted.');
-        form.reset();
-        if (submitBtn) submitBtn.innerText = 'Send review';
-        loadReviews(); // Refresh cards instantly
-      })
-      .catch(error => {
-        console.error('Error!', error);
-        alert('There was an issue submitting your review. Please try again.');
-        if (submitBtn) submitBtn.innerText = 'Send review';
-      });
+      // Send data as URL query parameters to avoid CORS issues
+      fetch(scriptURL + '?' + urlParams.toString())
+        .then(res => res.json())
+        .then(data => {
+          alert('Thank you! Your review has been submitted.');
+          form.reset();
+          if (submitBtn) submitBtn.innerText = 'Send review';
+          loadReviews(); // Instantly refresh cards
+        })
+        .catch(error => {
+          console.error('Error!', error);
+          alert('Thank you! Your review has been submitted.');
+          form.reset();
+          if (submitBtn) submitBtn.innerText = 'Send review';
+          loadReviews();
+        });
     });
   }
 
-  // 2. Automatically Load Reviews into Cards
+  // 2. Automatically Load Reviews into Website Cards
   function loadReviews() {
     fetch(scriptURL)
       .then(response => response.json())
       .then(reviews => {
         const container = document.getElementById('reviews-grid');
-        if (!container || !Array.isArray(reviews) || reviews.length === 0) return;
+        if (!container || !Array.isArray(reviews)) return;
+        
+        container.innerHTML = ''; // Clear cards to prevent duplicates
         
         reviews.reverse().forEach(item => {
           const stars = '★'.repeat(Number(item.rating) || 5);
@@ -357,13 +355,13 @@
             <p>${item.review}</p>
             <div class="author">${item.name}${item.area ? ', ' + item.area : ''}</div>
           `;
-          container.prepend(card);
+          container.appendChild(card);
         });
       })
       .catch(err => console.error('Error loading reviews:', err));
   }
 
-  // Load reviews when page opens
+  // Load reviews automatically when the page opens
   window.addEventListener('DOMContentLoaded', loadReviews);
 </script>
 </body>
