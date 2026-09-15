@@ -273,22 +273,31 @@
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       
-      const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('.btn') || form.querySelector('button');
+      const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('button');
       if (submitBtn) submitBtn.innerText = 'Sending...';
 
       const formData = new FormData(form);
+      const urlParams = new URLSearchParams();
+      formData.forEach((value, key) => {
+        urlParams.append(key, value);
+      });
 
-      fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
-        .then(response => {
-          alert('Thank you! Your review has been submitted.');
-          form.reset();
-          if (submitBtn) submitBtn.innerText = 'Send review';
-        })
-        .catch(error => {
-          console.error('Error!', error.message);
-          alert('There was an issue submitting your review. Please try again.');
-          if (submitBtn) submitBtn.innerText = 'Send review';
-        });
+      fetch(scriptURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: urlParams.toString(),
+        mode: 'no-cors'
+      })
+      .then(() => {
+        alert('Thank you! Your review has been submitted.');
+        form.reset();
+        if (submitBtn) submitBtn.innerText = 'Send review';
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+        alert('There was an issue submitting your review.');
+        if (submitBtn) submitBtn.innerText = 'Send review';
+      });
     });
   }
 </script>
