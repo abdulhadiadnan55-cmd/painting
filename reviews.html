@@ -265,7 +265,7 @@
 </footer>
 
 <script src="script.js"></script>
- <script>
+<script>
   const scriptURL = 'https://script.google.com/macros/s/AKfycbwcd7ICiaHV1KDqiL205bjjokSyag8S3S7SlAV0uz3CFmNiaok4BlLNpwLiqueGREDqFw/exec';
   const form = document.getElementById('reviewForm');
 
@@ -278,7 +278,7 @@
 
       const formData = new FormData(form);
 
-      fetch(scriptURL, { method: 'POST', body: formData })
+      fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
         .then(response => {
           alert('Thank you! Your review has been submitted.');
           form.reset();
