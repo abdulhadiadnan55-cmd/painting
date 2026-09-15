@@ -237,11 +237,11 @@
         </div>
         <div class="form-field">
           <label for="reviewerText">Your review</label>
-          <textarea id="reviewerText" name="reviewerText" required placeholder="What was the job, and how did it go?"></textarea>
+          <textarea id="reviewerText" name="review" required placeholder="What was the job, and how did it go?"></textarea>
         </div>
         <p class="form-note">Submitting opens your email app with the review filled in — just hit send from there.</p>
         <button type="submit" class="btn btn-primary">Send review</button>
-        <div class="form-success" id="formSuccess">Thanks — your email app should have opened with your review ready to send. Once we receive it, we'll get it added.</div>
+        <div class="form-success" id="reviewForm">Thanks — your email app should have opened with your review ready to send. Once we receive it, we'll get it added.</div>
       </form>
     </div>
     </div>
@@ -265,5 +265,32 @@
 </footer>
 
 <script src="script.js"></script>
+ <script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwcd7ICiaHV1KDqiL205bjjokSyag8S3S7SlAV0uz3CFmNiaok4BlLNpwLiqueGREDqFw/exec';
+  const form = document.getElementById('reviewForm');
+
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('.btn') || form.querySelector('button');
+      if (submitBtn) submitBtn.innerText = 'Sending...';
+
+      const formData = new FormData(form);
+
+      fetch(scriptURL, { method: 'POST', body: formData })
+        .then(response => {
+          alert('Thank you! Your review has been submitted.');
+          form.reset();
+          if (submitBtn) submitBtn.innerText = 'Send review';
+        })
+        .catch(error => {
+          console.error('Error!', error.message);
+          alert('There was an issue submitting your review. Please try again.');
+          if (submitBtn) submitBtn.innerText = 'Send review';
+        });
+    });
+  }
+</script>
 </body>
 </html>
