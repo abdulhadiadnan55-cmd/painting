@@ -266,7 +266,7 @@
 
 <script src="script.js"></script>
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwcd7ICIaHV1KDqIL205bjjoKSyag8S357SlAV0uz3CFmNiaok4BlLNpwLIqweGREdqFw/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwcd7ICiaHV1KDqiL205bjjokSyag8S3S7SlAV0uz3CFmNiaok4BlLNpwLiqueGREDqFw/exec';
   const form = document.getElementById('reviewForm');
 
   if (form) {
@@ -276,6 +276,7 @@
       const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('button');
       if (submitBtn) submitBtn.innerText = 'Sending...';
 
+      // Pack up the form fields using URLSearchParams so Google Apps Script can read them
       const formData = new FormData(form);
       const urlParams = new URLSearchParams();
       formData.forEach((value, key) => {
@@ -294,8 +295,8 @@
         if (submitBtn) submitBtn.innerText = 'Send review';
       })
       .catch(error => {
-        console.error('Error!', error.message);
-        alert('There was an issue submitting your review.');
+        console.error('Error!', error);
+        alert('There was an issue submitting your review. Please try again.');
         if (submitBtn) submitBtn.innerText = 'Send review';
       });
     });
